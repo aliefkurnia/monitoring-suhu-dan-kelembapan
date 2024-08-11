@@ -26,11 +26,41 @@ app.get("/", (req, res) => {
   return res.json("from backend");
 });
 
+// Route for fetching all data from monitoring table
 app.get("/monitoring", (req, res) => {
   const sql = "SELECT * FROM monitoring";
   db.query(sql, (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
+  });
+});
+
+// Separate route for inserting data into the monitoring table via GET request
+app.get("/insert", (req, res) => {
+  const { temperature, humidity } = req.query;
+
+  if (!temperature || !humidity) {
+    return res.status(400).json({
+      success: false,
+      message: "Temperature and humidity are required",
+    });
+  }
+
+  const sql = "INSERT INTO monitoring (suhu, kelembapan) VALUES (?, ?)";
+  db.query(sql, [temperature, humidity], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to insert data" });
+    }
+
+    console.log("Data inserted successfully");
+    return res.json({
+      success: true,
+      message: "Data inserted successfully",
+      data: { id: results.insertId, temperature, humidity },
+    });
   });
 });
 
@@ -70,7 +100,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-// Route untuk pendaftaran
+// Route for registration
 app.post("/register", (req, res) => {
   const { username, password } = req.body;
   console.log("Registration attempt:", { username });

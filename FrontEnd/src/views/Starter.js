@@ -10,7 +10,7 @@ const CustomCards = () => {
   const [monitoringData, setMonitoringData] = useState([]);
   const [latestData, setLatestData] = useState(null);
 
-  useEffect(() => {
+  const fetchData = () => {
     fetch("http://localhost:8801/monitoring")
       .then((res) => res.json())
       .then((data) => {
@@ -18,6 +18,13 @@ const CustomCards = () => {
         setLatestData(data[data.length - 1]);
       })
       .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    fetchData();
+    const intervalId = setInterval(fetchData, 1000); // Interval 5 detik
+
+    return () => clearInterval(intervalId); // Bersihkan interval saat komponen unmount
   }, []);
 
   if (!latestData) {
@@ -34,7 +41,14 @@ const CustomCards = () => {
     minute: "2-digit",
     second: "2-digit",
   });
-
+  // const formattedDate = new Date().toLocaleDateString("id-ID", {
+  //   day: "2-digit",
+  //   month: "short",
+  //   year: "numeric",
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  //   second: "2-digit",
+  // });
   return (
     <div>
       <Row>
