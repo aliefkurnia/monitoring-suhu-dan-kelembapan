@@ -37,17 +37,17 @@ app.get("/monitoring", (req, res) => {
 
 // Separate route for inserting data into the monitoring table via GET request
 app.get("/insert", (req, res) => {
-  const { temperature, humidity } = req.query;
+  const { suhu, kelembapan } = req.query;
 
-  if (!temperature || !humidity) {
+  if (!suhu || !kelembapan) {
     return res.status(400).json({
       success: false,
-      message: "Temperature and humidity are required",
+      message: "suhu and kelembapan are required",
     });
   }
 
   const sql = "INSERT INTO monitoring (suhu, kelembapan) VALUES (?, ?)";
-  db.query(sql, [temperature, humidity], (err, results) => {
+  db.query(sql, [suhu, kelembapan], (err, results) => {
     if (err) {
       console.error("Database error:", err);
       return res
@@ -59,7 +59,7 @@ app.get("/insert", (req, res) => {
     return res.json({
       success: true,
       message: "Data inserted successfully",
-      data: { id: results.insertId, temperature, humidity },
+      data: { id: results.insertId, suhu, kelembapan },
     });
   });
 });

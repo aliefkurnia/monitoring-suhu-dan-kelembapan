@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navbar,
   Collapse,
@@ -15,15 +15,23 @@ import Logo from "./Logo";
 import user1 from "../assets/images/users/user4.jpg";
 
 const Header = () => {
-  const [isOpen] = React.useState(false);
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [username, setUsername] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch username from localStorage
+    const storedUsername = localStorage.getItem("username");
+    setUsername(storedUsername || "Guest");
+  }, []); // Only run once on mount
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   const handleLogout = () => {
     // Hapus token atau informasi pengguna dari localStorage
     localStorage.removeItem("token");
+    localStorage.removeItem("username"); // Remove username on logout
     // Arahkan pengguna kembali ke halaman login
     navigate("/login");
   };
@@ -35,13 +43,16 @@ const Header = () => {
           <Logo />
         </div>
         <NavbarBrand>Monitoring Suhu dan Kelembapan</NavbarBrand>
-        <Button color="primary" className=" d-lg-none">
+        <Button color="primary" className="d-lg-none ms-auto">
           <i className="bi bi-list"></i>
         </Button>
       </div>
 
       <Collapse navbar isOpen={isOpen}>
         <Nav className="me-auto" navbar></Nav>
+        <span className="ms-3 align-item-right me-3">
+          Selamat Datang <strong>{username}</strong>
+        </span>
         <Dropdown isOpen={dropdownOpen} toggle={toggle}>
           <DropdownToggle color="transparent">
             <img
@@ -49,7 +60,7 @@ const Header = () => {
               alt="profile"
               className="rounded-circle"
               width="30"
-            ></img>
+            />
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem header>Info</DropdownItem>

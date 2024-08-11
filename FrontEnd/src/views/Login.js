@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -61,6 +61,10 @@ const switchStyle = {
 };
 
 const Login = () => {
+  useEffect(() => {
+    // Clear username from localStorage on initial load
+    localStorage.removeItem("username");
+  }, []);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false); // State untuk switch antara login dan register
@@ -82,6 +86,9 @@ const Login = () => {
       .then((data) => {
         if (data.success) {
           console.log("Login successful", data.user);
+          localStorage.removeItem("username");
+          // Store the new username
+          localStorage.setItem("username", username);
           navigate("/starter");
         } else {
           toast.error(data.message);
