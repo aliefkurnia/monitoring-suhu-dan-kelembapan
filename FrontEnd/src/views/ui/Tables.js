@@ -43,6 +43,7 @@ const Tables = () => {
   });
 
   // Pagination
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
@@ -58,13 +59,89 @@ const Tables = () => {
   };
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
   const getSortIcon = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "ascending" ? faSortUp : faSortDown;
     }
     return faSort;
+  };
+
+  // Pagination Controls
+  const paginationRange = () => {
+    const range = [];
+    const maxPagesToShow = 4;
+    const startPage = 1;
+    const endPage = totalPages;
+
+    // Always show the first page
+    range.push(startPage);
+
+    // Calculate the page range to show around the current page
+    if (totalPages > maxPagesToShow) {
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      // Show pages around the current page
+      for (let i = start; i <= end; i++) {
+        range.push(i);
+      }
+
+      // Add ellipsis before the last page
+      if (end < totalPages - 1) {
+        range.push("...");
+      }
+
+      // Always show the last page
+      range.push(endPage);
+    } else {
+      // If the total number of pages is within the limit, show all pages
+      for (let i = startPage + 1; i <= endPage; i++) {
+        range.push(i);
+      }
+    }
+
+    return range;
+  };
+
+  // Inline styles
+  const paginationStyles = {
+    container: {
+      display: "flex",
+      gap: "4px",
+      alignItems: "center",
+    },
+    button: {
+      margin: "0 3px",
+      border: "0px",
+      backgroundColor: "#fff",
+      color: "#007bff",
+      cursor: "pointer",
+      borderRadius: "4px",
+      transition: "background-color 0.3s, color 0.3s, transform 0.2s",
+      fontWeight: "bold",
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    },
+    activeButton: {
+      backgroundColor: "#007bff",
+      color: "#fff",
+    },
+    disabledButton: {
+      cursor: "not-allowed",
+      opacity: "0.5",
+      backgroundColor: "#e9ecef",
+      borderColor: "#e9ecef",
+      backgroundColor: "#fff",
+      color: "#007bff",
+      cursor: "pointer",
+      borderRadius: "4px",
+      transition: "background-color 0.3s, color 0.3s, transform 0.2s",
+      fontWeight: "bold",
+      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    },
+    buttonHover: {
+      backgroundColor: "#f1f1f1",
+      transform: "scale(1.05)",
+    },
   };
 
   return (
@@ -75,7 +152,7 @@ const Tables = () => {
             <i className="bi bi-card-text me-2"> </i>
             Data Suhu Dan Kelembapan Ruangan Burung Walet
           </CardTitle>
-          <CardBody className="">
+          <CardBody>
             <Input
               type="text"
               placeholder="Search..."
@@ -146,19 +223,46 @@ const Tables = () => {
                 ))}
               </tbody>
             </Table>
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-between align-items-center">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
+                style={
+                  currentPage === 1
+                    ? paginationStyles.disabledButton
+                    : paginationStyles.button
+                }
               >
                 Previous
               </button>
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
+              <div style={paginationStyles.container}>
+                {paginationRange().map((page, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      if (page !== "...") handlePageChange(page);
+                    }}
+                    style={{
+                      ...paginationStyles.button,
+                      ...(page === currentPage
+                        ? paginationStyles.activeButton
+                        : {}),
+                      ...(page === "..." ? {} : paginationStyles.buttonHover),
+                    }}
+                    disabled={page === "..."}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                style={
+                  currentPage === totalPages
+                    ? paginationStyles.disabledButton
+                    : paginationStyles.button
+                }
               >
                 Next
               </button>
