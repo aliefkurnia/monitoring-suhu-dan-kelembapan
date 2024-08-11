@@ -11,6 +11,11 @@ const navigation = [
     href: "/table",
     icon: "bi bi-layout-split",
   },
+  {
+    title: "Controller",
+    href: "/controller", // Add this line
+    icon: "bi bi-sliders",
+  },
 ];
 
 const Sidebar = () => {

@@ -10,6 +10,7 @@ const Login = lazy(() => import("../views/Login"));
 const Starter = lazy(() => import("../views/Starter"));
 const About = lazy(() => import("../views/About"));
 const Tables = lazy(() => import("../views/ui/Tables"));
+const Controller = lazy(() => import("../views/ui/Controller"));
 
 /*****Routes******/
 const ThemeRoutes = [
@@ -21,6 +22,7 @@ const ThemeRoutes = [
       { path: "/starter", element: <Starter /> },
       { path: "/about", element: <About /> },
       { path: "/table", element: <Tables /> },
+      { path: "/controller", element: <Controller /> },
     ],
   },
   {
