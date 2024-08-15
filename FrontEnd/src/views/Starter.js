@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Card, CardTitle, CardGroup, CardFooter } from "reactstrap";
+import {
+  Col,
+  Row,
+  Card,
+  CardTitle,
+  CardGroup,
+  CardFooter,
+  Button,
+} from "reactstrap";
 import tempico from "../assets/images/logos/temp.svg";
 import humiico from "../assets/images/logos/kelembapan.svg";
 import dateico from "../assets/images/logos/datetime.svg";
@@ -9,6 +17,8 @@ import Loader from "../layouts/loader/Loader.js";
 const CustomCards = () => {
   const [monitoringData, setMonitoringData] = useState([]);
   const [latestData, setLatestData] = useState(null);
+  const [motorKipas, setMotorKipas] = useState(false);
+  const [motorHumidifier, setMotorHumidifier] = useState(false);
 
   const fetchData = () => {
     fetch("http://localhost:8801/monitoring")
@@ -22,10 +32,17 @@ const CustomCards = () => {
 
   useEffect(() => {
     fetchData();
-    const intervalId = setInterval(fetchData, 1000); // Interval 5 detik
+    const intervalId = setInterval(fetchData, 1000); // Interval 1 detik
 
     return () => clearInterval(intervalId); // Bersihkan interval saat komponen unmount
   }, []);
+
+  useEffect(() => {
+    if (latestData) {
+      setMotorKipas(!!latestData.motor_kipas);
+      setMotorHumidifier(!!latestData.motor_humidifier);
+    }
+  }, [latestData]);
 
   if (!latestData) {
     return <Loader />;
@@ -41,14 +58,17 @@ const CustomCards = () => {
     minute: "2-digit",
     second: "2-digit",
   });
-  // const formattedDate = new Date().toLocaleDateString("id-ID", {
-  //   day: "2-digit",
-  //   month: "short",
-  //   year: "numeric",
-  //   hour: "2-digit",
-  //   minute: "2-digit",
-  //   second: "2-digit",
-  // });
+
+  const handleToggleMotorKipas = () => {
+    setMotorKipas((prevState) => !prevState);
+    // Add logic to handle the toggle action, e.g., send a request to the server
+  };
+
+  const handleToggleMotorHumidifier = () => {
+    setMotorHumidifier((prevState) => !prevState);
+    // Add logic to handle the toggle action, e.g., send a request to the server
+  };
+
   return (
     <div>
       <Row>
@@ -113,7 +133,7 @@ const CustomCards = () => {
           <Card
             body
             style={{
-              backgroundColor: "#E2E2B6",
+              backgroundColor: "#ededd7",
               color: "#333",
               width: "100%",
               height: "10rem",
@@ -122,15 +142,46 @@ const CustomCards = () => {
           >
             <div className="d-flex justify-content-between align-items-center">
               <div>
-                <CardTitle style={{ fontSize: "50px" }} tag="h1">
+                <CardTitle style={{ fontSize: "35px" }} tag="h1">
+                  <img
+                    src={dateico}
+                    alt="dateico"
+                    style={{ width: "80px", height: "80px" }}
+                  />
                   {formattedDate}
                 </CardTitle>
               </div>
-              <img
-                src={dateico}
-                alt="dateico"
-                style={{ width: "80px", height: "80px" }}
-              />
+              <div className="d-flex align-items-center">
+                <div className="ml-3">
+                  <Button
+                    style={{
+                      backgroundColor: motorKipas ? "#28a745" : "#dc3545", // Warna background untuk "success" dan "danger"
+                      borderColor: motorKipas ? "#28a745" : "#dc3545", // Warna border untuk "success" dan "danger"
+                      color: "#fff", // Warna teks
+                      cursor: "not-allowed", // Cursor yang menandakan tombol tidak dapat diklik
+                      opacity: 1, // Jaga agar tombol tidak transparan saat dinonaktifkan
+                      marginRight: "10px", // Jarak antar tombol, atur sesuai kebutuhan
+                    }}
+                    onClick={handleToggleMotorKipas}
+                    disabled={true} // Menonaktifkan tombol
+                  >
+                    Motor Kipas {motorKipas ? "ON" : "OFF"}
+                  </Button>
+                  <Button
+                    style={{
+                      backgroundColor: motorHumidifier ? "#28a745" : "#dc3545", // Warna background untuk "success" dan "danger"
+                      borderColor: motorHumidifier ? "#28a745" : "#dc3545", // Warna border untuk "success" dan "danger"
+                      color: "#fff", // Warna teks
+                      cursor: "not-allowed", // Cursor yang menandakan tombol tidak dapat diklik
+                      opacity: 1, // Jaga agar tombol tidak transparan saat dinonaktifkan
+                    }}
+                    onClick={handleToggleMotorHumidifier}
+                    disabled={true} // Menonaktifkan tombol
+                  >
+                    Motor Humidifier {motorHumidifier ? "ON" : "OFF"}
+                  </Button>
+                </div>
+              </div>
             </div>
             <CardFooter>Last Update</CardFooter>
           </Card>
