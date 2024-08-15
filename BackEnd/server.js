@@ -37,7 +37,7 @@ app.get("/monitoring", (req, res) => {
 
 // Separate route for inserting data into the monitoring table via GET request
 app.get("/insert", (req, res) => {
-  const { suhu, kelembapan } = req.query;
+  const { suhu, kelembapan, motor_kipas, motor_humidifier } = req.query;
 
   if (!suhu || !kelembapan) {
     return res.status(400).json({
@@ -46,22 +46,33 @@ app.get("/insert", (req, res) => {
     });
   }
 
-  const sql = "INSERT INTO monitoring (suhu, kelembapan) VALUES (?, ?)";
-  db.query(sql, [suhu, kelembapan], (err, results) => {
-    if (err) {
-      console.error("Database error:", err);
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to insert data" });
-    }
+  const sql =
+    "INSERT INTO monitoring (suhu, kelembapan, motor_kipas, motor_humidifier) VALUES (?, ?, ?, ?)";
+  db.query(
+    sql,
+    [suhu, kelembapan, motor_kipas, motor_humidifier],
+    (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res
+          .status(500)
+          .json({ success: false, message: "Failed to insert data" });
+      }
 
-    console.log("Data inserted successfully");
-    return res.json({
-      success: true,
-      message: "Data inserted successfully",
-      data: { id: results.insertId, suhu, kelembapan },
-    });
-  });
+      console.log("Data inserted successfully");
+      return res.json({
+        success: true,
+        message: "Data inserted successfully",
+        data: {
+          id: results.insertId,
+          suhu,
+          kelembapan,
+          motor_kipas,
+          motor_humidifier,
+        },
+      });
+    }
+  );
 });
 
 app.post("/login", (req, res) => {
