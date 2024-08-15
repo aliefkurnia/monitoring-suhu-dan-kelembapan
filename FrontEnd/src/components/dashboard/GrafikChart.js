@@ -55,12 +55,12 @@ const GrafikChart = ({ monitoringData }) => {
   return (
     <Card>
       <CardBody>
-        <CardTitle tag="h5">Statitik Suhu Dan Kelembapan</CardTitle>
+        <CardTitle tag="h5">Statistik Suhu Dan Kelembapan</CardTitle>
         <CardSubtitle className="text-muted" tag="h6">
           Ruangan Burung Walet
         </CardSubtitle>
 
-        <Chart options={options} series={series} type="area" height="279" />
+        <Chart options={options} series={series} type="area" height="300" />
       </CardBody>
     </Card>
   );

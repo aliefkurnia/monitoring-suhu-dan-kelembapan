@@ -2,30 +2,36 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import backgroundImage from "../assets/images/bg/backgroundlogin.jpg"; // Import gambar latar belakang
+import backgroundImage from "../assets/images/bg/backgroundlogin.jpg";
 
 const loginPageStyle = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  height: "100vh",
+  padding: "19vh 2vw",
   background: `url(${backgroundImage}) no-repeat center center fixed`,
-  backgroundSize: "cover", // Pastikan gambar mencakup seluruh area
+  backgroundSize: "cover", // Ensures the background covers the entire container
+  minHeight: "100vh", // Ensures the container takes at least the full viewport height
+  width: "100%", // Ensures the container takes the full width of the screen
+  overflow: "hidden", // Prevents scrollbars in case of slight overflows
 };
 
 const titleStyle = {
   position: "absolute",
-  top: "20%",
+  top: "7vh", // Moving it slightly down for better visual balance
   left: "50%",
   transform: "translateX(-50%)",
-  fontSize: "28px",
+  fontSize: "clamp(16px, 4vw, 24px)", // Smaller range for responsive font size
   color: "#fff",
   fontWeight: "bold",
   textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+  textAlign: "center",
+  padding: "0 5vw", // Reduced padding to fit better on smaller screens
+  maxWidth: "90vw", // Ensures the text doesn't overflow the screen width
 };
 
 const loginContainerStyle = {
-  width: "100%",
+  width: "90vw",
   maxWidth: "400px",
   padding: "2rem",
   background: "#fff",
@@ -62,12 +68,12 @@ const switchStyle = {
 
 const Login = () => {
   useEffect(() => {
-    // Clear username from localStorage on initial load
     localStorage.removeItem("username");
   }, []);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isRegistering, setIsRegistering] = useState(false); // State untuk switch antara login dan register
+  const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = (event) => {
@@ -87,7 +93,6 @@ const Login = () => {
         if (data.success) {
           console.log("Login successful", data.user);
           localStorage.removeItem("username");
-          // Store the new username
           localStorage.setItem("username", username);
           navigate("/starter");
         } else {
@@ -103,7 +108,6 @@ const Login = () => {
   const handleRegister = (event) => {
     event.preventDefault();
     fetch("http://localhost:8801/register", {
-      // Ganti endpoint sesuai kebutuhan
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -118,7 +122,7 @@ const Login = () => {
         if (data.success) {
           console.log("Registration successful", data.user);
           toast.success("Registration successful! Please log in.");
-          setIsRegistering(false); // Kembali ke login setelah pendaftaran berhasil
+          setIsRegistering(false);
         } else {
           toast.error(data.message);
         }
