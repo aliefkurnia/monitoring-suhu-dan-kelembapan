@@ -195,6 +195,28 @@ const Tables = () => {
                     <FontAwesomeIcon icon={getSortIcon("kelembapan")} />
                   </th>
                   <th
+                    onClick={() => handleSort("motor_kipas")}
+                    style={{
+                      backgroundColor: "#E2E2B6",
+                      cursor: "pointer",
+                      padding: "10px",
+                    }}
+                  >
+                    Motor Kipas{" "}
+                    <FontAwesomeIcon icon={getSortIcon("motor_kipas")} />
+                  </th>
+                  <th
+                    onClick={() => handleSort("motor_humidifier")}
+                    style={{
+                      backgroundColor: "#E2E2B6",
+                      cursor: "pointer",
+                      padding: "10px",
+                    }}
+                  >
+                    Motor Humidifier{" "}
+                    <FontAwesomeIcon icon={getSortIcon("motor_humidifier")} />
+                  </th>
+                  <th
                     onClick={() => handleSort("tanggal")}
                     style={{
                       backgroundColor: "#E2E2B6",
@@ -212,6 +234,8 @@ const Tables = () => {
                     <th scope="row">{item.no}</th>
                     <td>{item.suhu}°C</td>
                     <td>{item.kelembapan}%</td>
+                    <td>{item.motor_kipas ? "ON" : "OFF"}</td>
+                    <td>{item.motor_humidifier ? "ON" : "OFF"}</td>
                     <td>
                       {new Date(item.tanggal).toLocaleDateString("id-ID", {
                         day: "2-digit",
@@ -244,12 +268,10 @@ const Tables = () => {
                     }}
                     style={{
                       ...paginationStyles.button,
-                      ...(page === currentPage
+                      ...(currentPage === page
                         ? paginationStyles.activeButton
                         : {}),
-                      ...(page === "..." ? {} : paginationStyles.buttonHover),
                     }}
-                    disabled={page === "..."}
                   >
                     {page}
                   </button>
