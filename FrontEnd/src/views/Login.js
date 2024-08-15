@@ -48,17 +48,16 @@ const inputStyle = {
   border: "1px solid #ccc",
 };
 
-const buttonStyle = {
+const buttonStyle = (isRegistering) => ({
   width: "100%",
   padding: "0.75rem",
   margin: "0.5rem 0",
   borderRadius: "4px",
   border: "none",
-  background: "#2575fc",
+  background: isRegistering ? "#f44336" : "#2575fc", // Red for register, blue for login
   color: "#fff",
   cursor: "pointer",
-};
-
+});
 const switchStyle = {
   margin: "1rem 0",
   cursor: "pointer",
@@ -161,7 +160,7 @@ const Login = () => {
               style={inputStyle}
             />
           </div>
-          <button type="submit" style={buttonStyle}>
+          <button type="submit" style={buttonStyle(isRegistering)}>
             {isRegistering ? "Register" : "Login"}
           </button>
         </form>
