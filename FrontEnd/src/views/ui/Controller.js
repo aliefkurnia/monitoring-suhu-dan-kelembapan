@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Form,
@@ -16,6 +16,26 @@ const Controller = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [modal, setModal] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
+
+  // Fetch the current mode when the component mounts
+  useEffect(() => {
+    const fetchMode = async () => {
+      try {
+        const response = await fetch("http://localhost:8801/get-mode");
+        const result = await response.json();
+
+        if (result.success) {
+          setSelectedOption(result.mode); // Set the default mode based on the response
+        } else {
+          console.error(result.message || "Error fetching mode.");
+        }
+      } catch (error) {
+        console.error("Error fetching mode:", error);
+      }
+    };
+
+    fetchMode();
+  }, []);
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
