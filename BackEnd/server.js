@@ -1,11 +1,10 @@
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json()); // Menggunakan bodyParser dari Express
 
 const db = mysql.createConnection({
   host: "localhost",
@@ -30,12 +29,17 @@ app.get("/", (req, res) => {
 app.get("/monitoring", (req, res) => {
   const sql = "SELECT * FROM monitoring";
   db.query(sql, (err, data) => {
-    if (err) return res.json(err);
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database error" });
+    }
     return res.json(data);
   });
 });
 
-// Separate route for inserting data into the monitoring table via GET request
+// Route for inserting data into the monitoring table via GET request
 app.get("/insert", (req, res) => {
   const { suhu, kelembapan, motor_kipas, motor_humidifier } = req.query;
 
@@ -75,6 +79,55 @@ app.get("/insert", (req, res) => {
   );
 });
 
+// Route untuk menyetel mode
+app.get("/set-mode", async (req, res) => {
+  const { mode } = req.query;
+
+  const validModes = ["OFF", "ON", "AUTOMATIC"];
+  if (!validModes.includes(mode)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid mode. Allowed values are OFF, ON, AUTOMATIC.",
+    });
+  }
+
+  // Update mode in the database
+  const sql = "UPDATE controling SET mode = ? WHERE id = 1";
+  db.query(sql, [mode], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database error" });
+    }
+    res.json({
+      success: true,
+      message: "Mode set successfully",
+    });
+  });
+});
+
+// Route for getting the current mode
+app.get("/get-mode", (req, res) => {
+  const sql = "SELECT mode FROM controling WHERE id = 1";
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res
+        .status(500)
+        .json({ success: false, message: "Database error" });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ success: false, message: "No mode found" });
+    }
+    res.json({
+      success: true,
+      mode: results[0].mode,
+    });
+  });
+});
+
+// Route for login
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   console.log("Login attempt:", { username, password });
@@ -133,5 +186,5 @@ app.post("/register", (req, res) => {
 });
 
 app.listen(8801, () => {
-  console.log("listening on port 8801");
+  console.log("Listening on port 8801");
 });

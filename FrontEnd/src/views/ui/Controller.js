@@ -26,11 +26,33 @@ const Controller = () => {
     setModal(!modal);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedOption) {
       setValidationMessage("Silakan Pilih Mode!");
-    } else {
-      toggleModal(); // Show the modal if an option is selected
+      return;
+    }
+
+    try {
+      // Kirim permintaan GET ke endpoint /set-mode
+      const response = await fetch(
+        `http://localhost:8801/set-mode?mode=${selectedOption}`,
+        {
+          method: "GET",
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        toggleModal(); // Show the modal if the request is successful
+      } else {
+        setValidationMessage(
+          result.message || "Terjadi kesalahan saat mengubah mode."
+        );
+      }
+    } catch (error) {
+      console.error("Error setting mode:", error);
+      setValidationMessage("Terjadi kesalahan saat mengubah mode.");
     }
   };
 
@@ -68,8 +90,8 @@ const Controller = () => {
               <Input
                 type="radio"
                 name="controlMode"
-                value="Automatic"
-                checked={selectedOption === "Automatic"}
+                value="AUTOMATIC"
+                checked={selectedOption === "AUTOMATIC"}
                 onChange={handleOptionChange}
               />
               Automatic
